@@ -16,20 +16,20 @@ namespace Payments.Consumers
             else
             {
                 // payment failed
-                if(random.Next(100) < 80)
-                    await context.Publish(new ProcessPaymentReplyEvent(ProcessPaymentReplyEvent.State.LIMITS_TOO_LOW, @event.CorrelationId));
-                else
+                if(random.Next(100) < 20 || @event.Card.CVV % 100 == 44)
                     await context.Publish(new ProcessPaymentReplyEvent(ProcessPaymentReplyEvent.State.INVALID_CARD_CREDENTIALS, @event.CorrelationId));
+                else
+                    await context.Publish(new ProcessPaymentReplyEvent(ProcessPaymentReplyEvent.State.LIMITS_TOO_LOW, @event.CorrelationId));
             }
         }
 
         public async Task<bool> ProcessPayment(CardCredentials credentials)
         {
             await Task.Delay(4000);
-            if (random.Next(100) > 10)
-                return true;
             if (credentials.CVV % 10 == 4)
                 return false;
+            if (random.Next(100) > 10)
+                return true;
             await Task.Delay(4000);
             if (random.Next(100) > 10)
                 return true;

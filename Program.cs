@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Payments.Consumers;
+using Models.Payments;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,7 @@ builder.Services.AddMassTransit(cfg =>
 });
 
 var app = builder.Build();
-//initDB();
+
 // bus for publishing a message, to check if everything works
 // THIS SHOULD NOT EXIST IN FINAL PROJECT
 
@@ -37,39 +38,7 @@ var app = builder.Build();
     });
 });
 busControl.Start();
-await busControl.Publish(new GetAvailableDestinationsEvent());
+await busControl.Publish(new ProcessPaymentEvent(new CardCredentials() { CVV = 244, ExpDate = "04/22", FullName = "Gienek", Number = "7358923759823753928" }, 2516.26));
 busControl.Stop();*/
 
 app.Run();
-
-/*void initDB()
-{
-    using (var scope = app.Services.CreateScope())
-    using (var context = scope.ServiceProvider.GetRequiredService<TransportContext>())
-    {
-        // init DB here?
-        context.Database.EnsureCreated();
-        if (!context.Destinations.Any())
-        {
-            using (var r = new StreamReader(@"Init/dest.json"))
-            {
-                string json = r.ReadToEnd();
-                List<string> dests = JsonConvert.DeserializeObject<List<string>>(json);
-                foreach (var dest in dests)
-                {
-                    context.Destinations.Add(new Destination { Name = dest });
-                }
-            }
-            using (var r = new StreamReader(@"Init/sources.json"))
-            {
-                string json = r.ReadToEnd();
-                List<string> srcs = JsonConvert.DeserializeObject<List<string>>(json);
-                foreach (var src in srcs)
-                {
-                    context.Sources.Add(new Source { Name = src });
-                }
-            }
-            context.SaveChanges();
-        }
-    };
-}*/
