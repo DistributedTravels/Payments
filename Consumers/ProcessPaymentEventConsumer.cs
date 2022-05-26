@@ -28,7 +28,7 @@ namespace Payments.Consumers
             await Task.Delay(4000);
             if (credentials.CVV % 10 == 4)
                 return false;
-            if (random.Next(100) > 10)
+            if (random.Next(100) > 10 || credentials.CVV %10 == 2)
                 return true;
             await Task.Delay(4000);
             if (random.Next(100) > 10)
